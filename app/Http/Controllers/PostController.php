@@ -1,0 +1,75 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Post;
+
+class PostController extends Controller
+{
+    //
+    public function index()
+    {
+        $posts = Post::orderBy('created_at', 'desc')->paginate(10);
+        return view('post/index', compact('posts'));
+    }
+
+    public function show(Post $post)
+    {
+
+        return view('post/show', compact('post'));
+    }
+
+    public function create()
+    {
+        return view('post/create');
+    }
+
+    public function store(Post $post)
+    {
+        //验证
+        $this->validate(request(), [
+            'title'   => 'required|min:3|max:20',
+            'content' => 'required|min:3',
+        ]);
+        //逻辑
+        Post::create(request(['title', 'content']));
+        //渲染
+        return redirect('/posts');
+    }
+
+    public function edit(Post $post)
+    {
+        return view('post.edit', compact('post'));
+    }
+
+    public function update()
+    {
+        //验证
+        $this->validate(request(), [
+            'title'   => 'required|min:3|max:20',
+            'content' => 'required|min:3',
+        ]);
+        //逻辑
+        $post = new Post();
+        $post->title = request('title');
+        $post->content = request('content');
+        $post->save();
+        //渲染
+        return redirect('/posts');
+    }
+
+    public function delete(Post $post)
+    {
+        $post->delete();
+        return redirect('/posts');
+    }
+
+    public function imgUpload(Request $request)
+    {
+        $path = $request->file('postsimg')->storePublicly(md5(time()));
+        $data['data'][] = asset('storage/' . $path);
+        $data['errno'] = 0;
+        return json_encode($data);
+    }
+}

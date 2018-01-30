@@ -11,6 +11,21 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//文章列表页
+Route::get('/posts', '\App\Http\Controllers\PostController@index');
+
+//文章创建
+Route::get('/posts/create', '\App\Http\Controllers\PostController@create');
+Route::post('/posts/store','\App\Http\Controllers\PostController@store');
+Route::get('/posts/{post}', '\App\Http\Controllers\PostController@show');
+
+//文章编辑
+Route::get('/posts/{post}/edit', '\App\Http\Controllers\PostController@edit');
+Route::put('/posts/{post}', '\App\Http\Controllers\PostController@update');
+
+//文章删除
+Route::get('/posts/{post}/delete', '\App\Http\Controllers\PostController@delete');
+
+//文章图片上传
+Route::post('/posts/img/upload', '\App\Http\Controllers\PostController@imgUpload');
+//文章详情页
