@@ -6,12 +6,13 @@ use Illuminate\Http\Request;
 use App\Post;
 use App\Comment;
 use App\Zan;
+
 class PostController extends Controller
 {
     //
     public function index()
     {
-        $posts = Post::orderBy('created_at', 'desc')->withCount(['comments','zans'])->paginate(10);
+        $posts = Post::orderBy('created_at', 'desc')->withCount(['comments', 'zans'])->paginate(10);
         return view('post/index', compact('posts'));
     }
 
@@ -30,12 +31,12 @@ class PostController extends Controller
     {
         //验证
         $this->validate(request(), [
-            'title'   => 'required|min:3|max:20',
+            'title'   => 'required|min:3',
             'content' => 'required|min:3',
         ]);
-        $user_id=\Auth::id();
+        $user_id = \Auth::id();
         //逻辑
-        $params=array_merge(request(['title', 'content']),['user_id'=>$user_id]);
+        $params = array_merge(request(['title', 'content']), ['user_id' => $user_id]);
         Post::create($params);
         //渲染
         return redirect('/posts');
@@ -54,7 +55,7 @@ class PostController extends Controller
             'content' => 'required|min:3',
         ]);
         //逻辑
-        $this->authorize('update',$post);
+        $this->authorize('update', $post);
         $post = new Post();
         $post->title = request('title');
         $post->content = request('content');
@@ -65,7 +66,7 @@ class PostController extends Controller
 
     public function delete(Post $post)
     {
-        $this->authorize('delete',$post);
+        $this->authorize('delete', $post);
         $post->delete();
         return redirect('/posts');
     }
@@ -77,34 +78,51 @@ class PostController extends Controller
         $data['errno'] = 0;
         return json_encode($data);
     }
-    public function comment(Post $post){
 
-        $this->validate(request(),[
-           'content'=>'required|min:3',
+    public function comment(Post $post)
+    {
+
+        $this->validate(request(), [
+            'content' => 'required|min:3',
         ]);
 
-        $comment=new Comment();
-        $comment->post_id=$post->id;
-        $comment->user_id=\Auth::id();
-        $comment->content=request('content');
+        $comment = new Comment();
+        $comment->post_id = $post->id;
+        $comment->user_id = \Auth::id();
+        $comment->content = request('content');
 
         $post->comments()->save($comment);
 
         return back();
     }
 
-    public function zan(Post $post){
-        $zan=new Zan();
-        $param=[
-            'user_id'=>\Auth::id(),
-            'post_id'=>$post->id,
+    public function zan(Post $post)
+    {
+        $zan = new Zan();
+        $param = [
+            'user_id' => \Auth::id(),
+            'post_id' => $post->id,
         ];
-       $zan->firstOrCreate($param);
+        $zan->firstOrCreate($param);
 
-       return back();
+        return back();
     }
-    public function unzan(Post $post){
+
+    public function unzan(Post $post)
+    {
         $post->zan(\Auth::id())->delete();
         return back();
+    }
+    public function search(){
+        //验证
+        $this->validate(request(),[
+           'query'=>'required'
+        ]);
+        //逻辑
+         $query=request('query');
+         $posts=\App\Post::search($query)->paginate(3);
+
+        //渲染
+        return view('post.search',compact('posts','query'));
     }
 }
