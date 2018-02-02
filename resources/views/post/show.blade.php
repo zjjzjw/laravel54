@@ -34,12 +34,14 @@
 
             <!-- List group -->
             <ul class="list-group">
+                @foreach($post->comments as $comment)
                 <li class="list-group-item">
-                    <h5>2017-05-28 10:15:08 by Kassandra Ankunding2</h5>
+                    <h5>{{$comment->created_at or ''}} by {{$comment->user->name or ''}}</h5>
                     <div>
-                        这是第一个评论这是第一个评论这是第一个评论这是第一个评论这是第一个评论这是第一个评论这是第一个评论这是第一个评论这是第一个评论
+                       {{$comment->content or ''}}
                     </div>
                 </li>
+                    @endforeach
             </ul>
         </div>
 
@@ -49,11 +51,11 @@
 
             <!-- List group -->
             <ul class="list-group">
-                <form action="/posts/comment" method="post">
+                <form action="/posts/{{$post->id}}/comment" method="post">
                  {{csrf_field()}}
-                    <input type="hidden" name="post_id" value="62"/>
                     <li class="list-group-item">
                         <textarea name="content" class="form-control" rows="10"></textarea>
+                        @include('layout.error')
                         <button class="btn btn-default" type="submit">提交</button>
                     </li>
                 </form>
