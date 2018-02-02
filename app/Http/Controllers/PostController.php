@@ -32,8 +32,10 @@ class PostController extends Controller
             'title'   => 'required|min:3|max:20',
             'content' => 'required|min:3',
         ]);
+        $user_id=\Auth::id();
         //逻辑
-        Post::create(request(['title', 'content']));
+        $params=array_merge(request(['title', 'content']),['user_id'=>$user_id]);
+        Post::create($params);
         //渲染
         return redirect('/posts');
     }
@@ -43,7 +45,7 @@ class PostController extends Controller
         return view('post.edit', compact('post'));
     }
 
-    public function update()
+    public function update(Post $post)
     {
         //验证
         $this->validate(request(), [
@@ -51,6 +53,7 @@ class PostController extends Controller
             'content' => 'required|min:3',
         ]);
         //逻辑
+        $this->authorize('update',$post);
         $post = new Post();
         $post->title = request('title');
         $post->content = request('content');
@@ -61,6 +64,7 @@ class PostController extends Controller
 
     public function delete(Post $post)
     {
+        $this->authorize('delete',$post);
         $post->delete();
         return redirect('/posts');
     }
