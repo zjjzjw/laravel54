@@ -41,11 +41,12 @@
     <div class="row">
         @yield('content')
 
-        @include('layout.sidebar')
-    </div>
-    @include('layout.footer')
 
+    </div>
+    @include('layout.sidebar')
 </div><!-- /.row -->
+@include('layout.footer')
+
 </div><!-- /.container -->
 
 
