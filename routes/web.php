@@ -50,3 +50,8 @@ Route::post('/register','\App\Http\Controllers\RegisterController@register');
 //个人设置
 Route::get('/user/{user}/setting','\App\Http\Controllers\UserController@setting');
 Route::post('/user/{user}/setting','\App\Http\Controllers\UserController@settingStore');
+
+//个人中心
+Route::get('/user/{user}','\App\Http\Controllers\UserController@show');
+Route::post('/user/{user}/fan','\App\Http\Controllers\UserController@fan');
+Route::post('/user/{user}/unfan','\App\Http\Controllers\UserController@unFan');
